@@ -55,10 +55,21 @@ __all__ = ['QuantType', 'BinaryQuant', 'TernaryQuant', 'RescalingIntQuant', 'Pre
 
 
 class QuantType(AutoName):
+    """
+    Type of quantization.
+    """
+
     BINARY = auto()
+    """Binary quantization."""
+
     TERNARY = auto()
+    """Ternary quantization."""
+
     INT = auto()
+    """Uniform integer quantization."""
+
     FP = auto()
+    """Floating point, quantization disabled."""
 
 
 class IdentityQuant(torch.jit.ScriptModule):
