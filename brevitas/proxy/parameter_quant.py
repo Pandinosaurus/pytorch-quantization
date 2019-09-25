@@ -247,10 +247,10 @@ class WeightQuantProxy(ParameterQuantProxy):
         If `scaling_impl_type` is set to ``CONST``, this value is used as the scaling factor across all relevant
         dimensions. Ignored otherwise.
     scaling_stats_op
-        Type of statistical operation performed for scaling, if required. If `scaling_impl_type` is set to ``STATS``,
-        the operation is part of the compute graph and back-propagated through. If If `scaling_impl_type` is set to
-        ``PARAMETER_FROM_STATS``, the operation is used only for computing the initialization of the parameter, possibly
-        across some dimensions. Ignored otherwise.
+        Type of statistical operation performed for scaling, if required. If `scaling_impl_type` is set to ``STATS`` or
+        ``AFFINE_STATS``, the operation is part of the compute graph and back-propagated through. If `scaling_impl_type`
+        is set to ``PARAMETER_FROM_STATS``, the operation is used only for computing the initialization of the
+        parameter, possibly across some dimensions. Ignored otherwise.
     scaling_impl_type
         Type of strategy adopted for scaling the quantized weights.
     scaling_stats_reduce_dim
@@ -276,12 +276,22 @@ class WeightQuantProxy(ParameterQuantProxy):
         If `bit_width_impl_type` is set to ``PARAMETER`` and `quant_type` is set to ``INT``, this value imposes an upper
         bound on the learned value. Ignored otherwise.
     tracked_parameter_list_init
+        Parameter tracked
     bit_width_impl_override
+        Override the bit-width implementation with an implementation defined elsewhere. Accepts BitWidthConst or
+        BitWidthParameter type of Modules. Useful for sharing the same learned bit-width between different layers.
     scaling_stats_input_view_shape_impl
     scaling_stats_input_concat_dim
     ternary_threshold
+        Value to be used as a threshold when `quant_type` is set to ``TERNARY``. Ignored otherwise.
     scaling_stats_sigma
+        Value to be used as sigma if `scaling_impl_type` is set to ``STATS``, `AFFINE_STATS`` or
+        ``PARAMETER_FROM_STATS`` and `scaling_stats_op` is set to ``AVE_SIGMA_STD`` or ''AVE_LEARN_SIGMA_STD''.
+        Ignored otherwise. When `scaling_impl_type` is set to ``STATS`` or `AFFINE_STATS``, and
+        `scaling_stats_op` is set to ''AVE_LEARN_SIGMA_STD'', the value is used for initialization.
     override_pretrained_bit_width
+        If set to ``True``, when loading a pre-trained model that includes a learned bit-width, the pre-trained value
+        is ignored and replaced by the value specified by ``bit-width``.
     """
 
     def __init__(self,
