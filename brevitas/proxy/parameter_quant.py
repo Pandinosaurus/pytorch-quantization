@@ -276,19 +276,26 @@ class WeightQuantProxy(ParameterQuantProxy):
         If `bit_width_impl_type` is set to ``PARAMETER`` and `quant_type` is set to ``INT``, this value imposes an upper
         bound on the learned value. Ignored otherwise.
     tracked_parameter_list_init
-        Parameter tracked
+        Pytorch Parameter of which statistics are computed when `scaling_impl_type` is set to ``STATS``,
+        ``AFFINE_STATS`` or ``PARAMETER_FROM_STATS``. This value initializes the list of parameters that are
+        concatenated together when computing statistics.
     bit_width_impl_override
         Override the bit-width implementation with an implementation defined elsewhere. Accepts BitWidthConst or
         BitWidthParameter type of Modules. Useful for sharing the same learned bit-width between different layers.
     scaling_stats_input_view_shape_impl
+        When `scaling_impl_type` is set to ``STATS``, ``AFFINE_STATS`` or ``PARAMETER_FROM_STATS``,
+        this Module reshapes each tracked parameter before concatenating them together and computing their statistics.
     scaling_stats_input_concat_dim
+        When `scaling_impl_type` is set to ``STATS``, ``AFFINE_STATS`` or ``PARAMETER_FROM_STATS``,
+        this value defines the dimension along which the tracked parameters are concated after
+        `scaling_stats_input_view_shape_impl` is called, but before statistics are taken.
     ternary_threshold
         Value to be used as a threshold when `quant_type` is set to ``TERNARY``. Ignored otherwise.
     scaling_stats_sigma
-        Value to be used as sigma if `scaling_impl_type` is set to ``STATS``, `AFFINE_STATS`` or
-        ``PARAMETER_FROM_STATS`` and `scaling_stats_op` is set to ``AVE_SIGMA_STD`` or ''AVE_LEARN_SIGMA_STD''.
-        Ignored otherwise. When `scaling_impl_type` is set to ``STATS`` or `AFFINE_STATS``, and
-        `scaling_stats_op` is set to ''AVE_LEARN_SIGMA_STD'', the value is used for initialization.
+        Value to be used as sigma if `scaling_impl_type` is set to ``STATS``, ``AFFINE_STATS`` or
+        ``PARAMETER_FROM_STATS`` and `scaling_stats_op` is set to ``AVE_SIGMA_STD`` or ``AVE_LEARN_SIGMA_STD``.
+        Ignored otherwise. When `scaling_impl_type` is set to ``STATS`` or ``AFFINE_STATS``, and
+        `scaling_stats_op` is set to ``AVE_LEARN_SIGMA_STD``, the value is used for initialization.
     override_pretrained_bit_width
         If set to ``True``, when loading a pre-trained model that includes a learned bit-width, the pre-trained value
         is ignored and replaced by the value specified by ``bit-width``.
@@ -312,7 +319,7 @@ class WeightQuantProxy(ParameterQuantProxy):
                  max_overall_bit_width: Optional[int],
                  tracked_parameter_list_init: torch.nn.Parameter,
                  bit_width_impl_override: Optional[Union[BitWidthConst, BitWidthParameter]],
-                 scaling_stats_input_view_shape_impl: StatsInputViewShapeImpl,
+                 scaling_stats_input_view_shape_impl: nn.Module,
                  scaling_stats_input_concat_dim: int,
                  ternary_threshold: Optional[float],
                  scaling_stats_sigma: Optional[float],
